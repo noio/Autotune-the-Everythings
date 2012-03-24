@@ -3,8 +3,18 @@
 import sys
 from aubio.task import *
 from music21 import *
+from util import *
 
 def getKey(filename):
+
+  #
+  # Tries to estimate the key for an audio file
+  #
+  # returns a list of frequencies
+  #
+
+  nfo("Start getKey")
+  nfo("Calculating pitches")
 
   mode = "yin"
   bufsize = 4096  
@@ -25,6 +35,8 @@ def getKey(filename):
   filetask = taskpitch(filename,params=params)
   pitch = filetask.compute_all()
 
+  nfo("Calculated pitches")
+
   pitchlist = []
   notes = stream.Stream()
 
@@ -40,8 +52,12 @@ def getKey(filename):
       
     i+=1
 
+  nfo("KrumhanslKessler")
+
   base = analysis.discrete.analyzeStream(notes, 'KrumhanslKessler').getScale().transpose(-36).pitches
   pitches = []
+
+  nfo("KrumhanslKesslerized", True)
 
   for y in base:
     n = note.Note()
@@ -55,5 +71,3 @@ def getKey(filename):
 
   pitches.sort()
   return pitches
-
-print getKey("s/test.wav")
