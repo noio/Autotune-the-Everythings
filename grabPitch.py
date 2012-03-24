@@ -3,8 +3,18 @@
 import sys
 from aubio.task import *
 from music21 import *
+from util import *
 
-def getKey(filename):
+def getKey(filename, midinotes=True):
+
+  #
+  # Tries to estimate the key for an audio file
+  #
+  # returns a list of frequencies
+  #
+
+  nfo("Start getKey")
+  nfo("Calculating pitches")
 
   mode = "yin"
   bufsize = 4096  
@@ -25,6 +35,8 @@ def getKey(filename):
   filetask = taskpitch(filename,params=params)
   pitch = filetask.compute_all()
 
+  nfo("Calculated pitches")
+
   pitchlist = []
   notes = stream.Stream()
 
@@ -40,20 +52,34 @@ def getKey(filename):
       
     i+=1
 
+  nfo("KrumhanslKessler")
+
   base = analysis.discrete.analyzeStream(notes, 'KrumhanslKessler').getScale().transpose(-36).pitches
   pitches = []
 
-  for y in base:
-    n = note.Note()
-    n.pitch = y
-    if not n.pitch.frequency in pitches:
-      pitches.append(n.pitch.frequency)
-    for i in range(5):
-      n.pitch.midi += 12
+  nfo("KrumhanslKesslerized", True)
+
+  if midinotes:
+    for y in base:
+      n = note.Note()
+      n.pitch = y
+      if not n.pitch.midi in pitches:
+        pitches.append(n.pitch.midi)
+      for i in range(5):
+        n.pitch.midi += 12
+        if not n.pitch.midi in pitches:
+          pitches.append(n.pitch.midi)
+  else:
+    for y in base:
+      n = note.Note()
+      n.pitch = y
       if not n.pitch.frequency in pitches:
         pitches.append(n.pitch.frequency)
+      for i in range(5):
+        n.pitch.frequency += 12
+        if not n.pitch.frequency in pitches:
+          pitches.append(n.pitch.frequency)
+
 
   pitches.sort()
   return pitches
-
-print getKey("s/test.wav")
