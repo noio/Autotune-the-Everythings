@@ -36,7 +36,7 @@ def fetch_youtube(youtube_url, output=None, silent=False):
         fmt = 'flv'
     #print getvidurl
     
-    vidfilename = 'v/%s.%s' % (output, fmt)
+    vidfilename = 'v/tmp/%s.%s' % (output, fmt)
     vidfile = open(vidfilename, 'wb')
     vidfile.write(urlopen(getvidurl).read())
 
@@ -49,8 +49,8 @@ def fetch_youtube(youtube_url, output=None, silent=False):
     nfo("Downloaded",True)
     nfo("FFMPEG sheit")
 
-    cmd = 'ffmpeg -i "%s" "s/%s.wav"'%(vidfilename, output)
+    cmd = 'ffmpeg -i "%s" "s/tmp/%s.wav"'%(vidfilename, output)
     os.system(cmd)
     nfo("FFMPEG done",True)
 
-    return vidfilename, "s/"+output+".wav"
+    return vidfilename, "s/tmp/"+output+".wav"

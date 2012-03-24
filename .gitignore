@@ -2,3 +2,4 @@
 *.wav
 *.mp4
 *.DS_Store
+*.pyc

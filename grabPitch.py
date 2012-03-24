@@ -25,8 +25,13 @@ def getKey(filename, midinotes=True):
   params.hopsize    = int(float(bufsize) / 2)
   params.bufsize    = bufsize
   params.step       = params.samplerate/float(hopsize)
-  params.units      = "midi"
-  params.pitchmax   = 83
+
+  if midinotes:
+    params.pitchmax   = 83
+    params.units      = "midi"
+  else:
+    params.pitchmax   = 1000
+    params.units      = "freq"
 
   wplot,oplots,titles = [],[],[]
 
@@ -76,7 +81,7 @@ def getKey(filename, midinotes=True):
       if not n.pitch.frequency in pitches:
         pitches.append(n.pitch.frequency)
       for i in range(5):
-        n.pitch.frequency += 12
+        n.pitch.midi += 12
         if not n.pitch.frequency in pitches:
           pitches.append(n.pitch.frequency)
 
