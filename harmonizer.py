@@ -120,4 +120,4 @@ def harmonize_wav_file(filename, poss_freqs=POSS_FREQS):
     f0_tones = get_f0_tones(signalin, 1/44100., 22050, min_freq=54, max_freq=220, key=poss_freqs)
 
     signalout = pitchshifter(signalin,signalout,dsize, f0_tones)
-    wavfile.write('%_harm.wav' % filename,sr,array(signalout, dtype='int16'))
+    wavfile.write('%s_harm.wav' % filename,sr,array(signalout, dtype='int16'))
