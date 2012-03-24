@@ -5,7 +5,7 @@ from aubio.task import *
 from music21 import *
 from util import *
 
-def getKey(filename):
+def getKey(filename, midinotes=True):
 
   #
   # Tries to estimate the key for an audio file
@@ -59,15 +59,27 @@ def getKey(filename):
 
   nfo("KrumhanslKesslerized", True)
 
-  for y in base:
-    n = note.Note()
-    n.pitch = y
-    if not n.pitch.frequency in pitches:
-      pitches.append(n.pitch.frequency)
-    for i in range(5):
-      n.pitch.midi += 12
+  if midinotes:
+    for y in base:
+      n = note.Note()
+      n.pitch = y
+      if not n.pitch.midi in pitches:
+        pitches.append(n.pitch.midi)
+      for i in range(5):
+        n.pitch.midi += 12
+        if not n.pitch.midi in pitches:
+          pitches.append(n.pitch.midi)
+  else:
+    for y in base:
+      n = note.Note()
+      n.pitch = y
       if not n.pitch.frequency in pitches:
         pitches.append(n.pitch.frequency)
+      for i in range(5):
+        n.pitch.frequency += 12
+        if not n.pitch.frequency in pitches:
+          pitches.append(n.pitch.frequency)
+
 
   pitches.sort()
   return pitches
