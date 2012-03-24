@@ -32,7 +32,7 @@ def fetch_youtube(youtube_url, output=None):
     os.system(cmd)
     
     
-vocoder = 
+# vocoder = 
 fetch_youtube("http://www.youtube.com/watch?v=ClFtbsdYoH0")
 
 
