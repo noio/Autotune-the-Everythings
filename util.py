@@ -21,3 +21,12 @@ def wtf(content, uri):
 def wavToMp3(uri):
   cmd = 'ffmpeg -i "%s" "s/%s.wav"'%(uri, uri[0:(len(uri)-4)])
   os.system(cmd)
+
+def clearFolder(folder):
+  for the_file in os.listdir(folder):
+    file_path = os.path.join(folder, the_file)
+    try:
+        if os.path.isfile(file_path):
+            os.unlink(file_path)
+    except Exception, e:
+        print e

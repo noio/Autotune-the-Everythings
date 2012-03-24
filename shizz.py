@@ -5,21 +5,43 @@ from grabPitch import *
 from audio import *
 from util import *
 
-musicvideo = "http://www.youtube.com/watch?v=6A3JstGlHO4"
-wordsvideo = "http://www.youtube.com/watch?v=bHi0-HCxf5s"
 
-#wvidf, waudf = fetch_youtube(wordsvideo)
-#mvidf, maudf = fetch_youtube(musicvideo)
+# Music
+musicvideo = "http://www.youtube.com/watch?v=censWqgjqno"
 
-key = getKey("s/test.wav",False)
+# Words
+wordsvideo = "http://www.youtube.com/watch?v=EGLPADW_kUw"
 
-#print mvidf
-#print maudf
-print key
-'''
+# GET THE AV
+wvidf, waudf = fetch_youtube(wordsvideo)
+mvidf, maudf = fetch_youtube(musicvideo)
 
-normalizeAudio("s/tomdehaandef.wav","s/tomdehaandef.wav")
-normalizeAudio("s/testdef.wav","s/testdef2.wav")
-addRevEch("s/tomdehaandef.wav","s/tomrvd.wav")
-mixSound("s/testdef.wav","s/tomrvd.wav","s/test_out.wav")
-'''
+mixed = "s/OUT.wav"
+outfile = "v/mixdown.flv"
+
+# Get the key for the audio
+frequencies = getKey(maudf,False)
+
+# TODO
+# AUTOTUNE
+
+waudf_n = waudf.replace(".wav","_n.wav")
+waudf_r = waudf.replace(".wav","_r.wav")
+maudf_n = maudf.replace(".wav","_n.wav")
+
+# Normalize audio
+normalizeAudio(waudf,waudf_n)
+normalizeAudio(maudf,maudf_n)
+
+# Add reverb and echo
+addRevEch(waudf_n,waudf_r)
+
+# Mix the sound
+mixSound(waudf_r, maudf_n, mixed)
+
+# Put sound to the video
+addSoundToVideo(mixed, wvidf, outfile)
+
+# Clear temp files
+clearFolder("s/tmp/")
+clearFolder("v/tmp/")
