@@ -5,7 +5,17 @@ def mixSound(fnem1,fnem2,foutnem):
   
   nfo("Mixing")
   
-  cmd = 'sox -m "%s" "%s" "%s"'%(fnem1, fnem2, foutnem)
+  cmd = 'sox -m "%s" -v 0.15 "%s" "%s"'%(fnem1, fnem2, foutnem)
+  os.system(cmd)
+  
+  nfo("Done",True)
+
+def monoize(f_in, f_out):
+
+  nfo("To mono")
+  
+  cmd = 'sox "%s" -c 1 "%s"'%(f_in, f_out)
+
   os.system(cmd)
   
   nfo("Done",True)

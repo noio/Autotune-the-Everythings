@@ -1,5 +1,7 @@
 from numpy import *
 from scipy.io import wavfile
+
+from util import *
  
  
 POSS_FREQS = [54.999999999999915, 61.73541265701542, 69.29565774421793, 73.4161919793518, 82.40688922821738, 92.4986056779085, 103.82617439498618, 109.99999999999989, 123.4708253140309, 138.59131548843592, 146.83238395870364, 164.81377845643485, 184.9972113558171, 207.65234878997245, 219.9999999999999, 246.94165062806198, 277.182630976872, 293.66476791740746, 329.62755691286986, 369.99442271163434, 415.3046975799451, 440.0, 493.8833012561241, 554.3652619537443, 587.3295358348153, 659.2551138257401, 739.988845423269, 830.6093951598907, 880.0000000000003, 987.7666025122488, 1108.7305239074892, 1174.659071669631, 1318.5102276514808, 1479.977690846539, 1661.218790319782, 1760.000000000002, 1975.5332050244986, 2217.4610478149793, 2349.3181433392633, 2637.020455302963, 2959.9553816930793, 3322.437580639566, 3520.0000000000055]
@@ -8,7 +10,7 @@ FUND = 131
 
 def pitchshifter(sigin,sigout,deltime, tones, fund_tone=131.):
     size = deltime       # delay time in samples
-    delay = np.zeros(size) # delay line
+    delay = zeros(size) # delay line
     env = bartlett(size)   # fade envelope table
     tap1 = 0            # tap positions
     tap2 = size/2
@@ -43,10 +45,7 @@ def pitchshifter(sigin,sigout,deltime, tones, fund_tone=131.):
         # increment tap pos according to pitch transposition
         # pitch = 2.**(tones[i]/12.)
         pitch = tones[i]/fund_tone
-        
-        if i % 10000 == 0:
-            print pitch
-            
+           
         tap1 += pitch
         tap2 = tap1 + size/2
 
@@ -101,23 +100,29 @@ def get_f0_tones(signal, dtime, block_length, key=None, min_freq=131/2., max_fre
 
 
 def harmonize_wav_file(filename, poss_freqs=POSS_FREQS):
-    (sr,signalin) = wavfile.read('liedje_tom.wav')
-    print sr
 
+    nfo("Harmonizing")
+    (sr,signalin) = wavfile.read(filename)
+    nfo("Wav file read")
     if signalin.shape[1] > 1:
         signalin = (signalin[:, 1] + signalin[:, 0]) / 2
-
-    print signalin.shape
 
     fund = FUND
     signalout = zeros(len(signalin))
     dsize = int(sr/(fund*0.5))
-    print dsize
 
     # tones = np.array([floor(float(i)/len(signalin)*24.)+1 for i in range(len(signalin))])
     # tones = np.array([1 + ((i * 10 / len(signalin)) % 3) * 7 for i in range(len(signalin))])
 
+    nfo("Fetching F0s")
     f0_tones = get_f0_tones(signalin, 1/44100., 22050, min_freq=54, max_freq=220, key=poss_freqs)
+    nfo("Fetched F0s")
 
+    nfo("Shift pitches")
     signalout = pitchshifter(signalin,signalout,dsize, f0_tones)
-    wavfile.write('%s_harm.wav' % filename,sr,array(signalout, dtype='int16'))
+
+    nfo("Store file")
+
+    wavfile.write('%s_harm.wav' % filename.replace(".wav",""),sr,array(signalout, dtype='int16'))
+
+    nfo("Done",True)
